@@ -4,4 +4,7 @@ cc = meson.get_compiler('c')
 libm = cc.find_library('m', required : false)
 luajit_source_dir = include_directories('src')
 
+dynasm = files('dynasm/dynasm.lua')
+vm_x86_dasc = files('src/vm_x86.dasc')
+
 subdir('src')
