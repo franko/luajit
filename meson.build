@@ -1,4 +1,4 @@
-project('luajit', 'c', version : '2.0.5', default_options : 'c_std=c99')
+project('luajit', 'c', version : '2.0.5')
 
 cc = meson.get_compiler('c')
 libm = cc.find_library('m', required : false)

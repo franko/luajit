@@ -13,11 +13,21 @@ buildvm_commands = [
     # {'mode': 'vmdef', 'output': 'vmdef.lua', 'input': ljlib_sources},
 ]
 
-ljvm_s = custom_target('lj_vm.s',
-    input : [],
-    output : 'lj_vm.s',
-    command : [buildvm, '-m', 'elfasm', '-o', '@OUTPUT@']
-)
+lj_defines = ['-D_FILE_OFFSET_BITS=64', '-D_LARGEFILE_SOURCE', '-U_FORTIFY_SOURCE', '-DLUA_MULTILIB=lib', '-DLUA_BUILD_AS_DLL']
+
+if host_machine.system() == 'windows'
+    ljcore_sources += custom_target('lj_vm.obj',
+        input : [],
+        output : 'lj_vm.obj',
+        command : [buildvm, '-m', 'peobj', '-o', '@OUTPUT@']
+    )
+else
+    ljcore_sources += custom_target('lj_vm.s',
+        input : [],
+        output : 'lj_vm.s',
+        command : [buildvm, '-m', 'elfasm', '-o', '@OUTPUT@']
+    )
+endif
 
 buildvm_headers = []
 foreach target : buildvm_commands
@@ -44,8 +54,9 @@ vmdef = custom_target('vmdef.lua',
 )
 
 luajit = executable('luajit',
-    ljlib_sources + ljcore_sources + buildvm_headers + [ljvm_s],
+    ljlib_sources + ljcore_sources + buildvm_headers,
     link_args: '-E',
+    c_args: lj_defines,
     include_directories: luajit_source_dir,
     dependencies: [libm, libdl],
     install: true
