@@ -23,6 +23,10 @@ if host_machine.system() == 'windows'
         output : 'lj_vm.obj',
         command : [buildvm, '-m', 'peobj', '-o', '@OUTPUT@']
     )
+
+    if get_option('default_library') != 'static'
+        lj_defines += '-DLUA_BUILD_AS_DLL'
+    endif
 else
     ljcore_sources += custom_target('lj_vm.s',
         input : [],
