@@ -1,3 +1,5 @@
+vm_x86_dasc = files('vm_x86.dasc')
+
 subdir('host')
 
 ljlib_sources = ['lib_base.c', 'lib_math.c', 'lib_bit.c', 'lib_string.c', 'lib_table.c', 'lib_io.c', 'lib_os.c', 'lib_package.c', 'lib_debug.c', 'lib_jit.c', 'lib_ffi.c']
@@ -24,12 +26,16 @@ if host_machine.system() == 'windows'
     if get_option('default_library') != 'static'
         lj_defines += '-DLUA_BUILD_AS_DLL'
     endif
+    lj_libname = 'lua' + luajit_abiver
+    lj_libprefix = ''
 else
     ljcore_sources += custom_target('lj_vm.s',
         input : [],
         output : 'lj_vm.s',
         command : [buildvm, '-m', 'elfasm', '-o', '@OUTPUT@']
     )
+    lj_libname = 'luajit'
+    lj_libprefix = 'lib'
 endif
 
 buildvm_headers = []
@@ -48,10 +54,10 @@ vmdef = custom_target('vmdef.lua',
     command : [buildvm, '-m', 'vmdef', '-o', '@OUTPUT@', '@INPUT@']
 )
 
-libluajit = library('lua51', ljlib_sources + ljcore_sources + buildvm_headers,
+libluajit = library(lj_libname, ljlib_sources + ljcore_sources + buildvm_headers,
     include_directories: luajit_source_dir,
     c_args: lj_defines,
-    name_prefix: ''
+    name_prefix: lj_libprefix
 )
 
 luajit = executable('luajit', ljmain_sources,
@@ -60,4 +66,11 @@ luajit = executable('luajit', ljmain_sources,
     include_directories: luajit_source_dir,
     dependencies: [libm, libdl],
     install: true
+)
+
+pkg.generate(libluajit,
+    filebase : 'luajit',
+    name : 'LuaJIT',
+    description : 'Just-in-time compiler for Lua',
+    url : 'http://luajit.org',
 )
