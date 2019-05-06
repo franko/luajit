@@ -55,12 +55,16 @@ vmdef = custom_target('vmdef.lua',
     command : [buildvm, '-m', 'vmdef', '-o', '@OUTPUT@', '@INPUT@']
 )
 
-luajit = executable('luajit',
-    ljlib_sources + ljcore_sources + buildvm_headers + ljmain_sources,
-#    link_args: '-E',
+libluajit = library('lua51', ljlib_sources + ljcore_sources + buildvm_headers,
+    include_directories: luajit_source_dir,
     c_args: lj_defines,
+    name_prefix: ''
+)
+
+luajit = executable('luajit', ljmain_sources,
+    c_args: lj_defines,
+    link_with: libluajit,
     include_directories: luajit_source_dir,
     dependencies: [libm, libdl],
-    install: true,
-    gui_app: false,
+    install: true
 )
