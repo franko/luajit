@@ -5,17 +5,14 @@ ljcore_sources = ['lj_gc.c', 'lj_err.c', 'lj_char.c', 'lj_bc.c', 'lj_obj.c', 'lj
 ljmain_sources = ['luajit.c']
 
 buildvm_commands = [
-    # {'mode': 'elfasm', 'output': 'lj_vm.s', 'input': []},
-    {'mode': 'ffdef', 'output': 'lj_ffdef.h', 'input': ljlib_sources},
-    {'mode': 'bcdef', 'output': 'lj_bcdef.h', 'input': ljlib_sources},
-    {'mode': 'folddef', 'output': 'lj_folddef.h', 'input': ['lj_opt_fold.c']},
-    {'mode': 'recdef', 'output': 'lj_recdef.h', 'input': ljlib_sources},
-    {'mode': 'libdef', 'output': 'lj_libdef.h', 'input': ljlib_sources},
-    # {'mode': 'vmdef', 'output': 'vmdef.lua', 'input': ljlib_sources},
+    {'mode': 'ffdef',   'output': 'lj_ffdef.h',   'input': ljlib_sources},
+    {'mode': 'bcdef',   'output': 'lj_bcdef.h',   'input': ljlib_sources},
+    {'mode': 'folddef', 'output': 'lj_folddef.h', 'input': 'lj_opt_fold.c'},
+    {'mode': 'recdef',  'output': 'lj_recdef.h',  'input': ljlib_sources},
+    {'mode': 'libdef',  'output': 'lj_libdef.h',  'input': ljlib_sources},
 ]
 
 lj_defines = ['-D_FILE_OFFSET_BITS=64', '-D_LARGEFILE_SOURCE', '-U_FORTIFY_SOURCE', '-DLUA_MULTILIB=lib']
-# '-DLUA_BUILD_AS_DLL'
 
 if host_machine.system() == 'windows'
     ljcore_sources += custom_target('lj_vm.obj',
@@ -43,14 +40,6 @@ foreach target : buildvm_commands
         command : [buildvm, '-m', target['mode'], '-o', '@OUTPUT@', '@INPUT@']
     )
 endforeach
-
-# host/buildvm -m elfasm -o lj_vm.s
-# host/buildvm -m ffdef -o lj_ffdef.h $LJLIBS
-# host/buildvm -m bcdef -o lj_bcdef.h $LJLIBS
-# host/buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
-# host/buildvm -m recdef -o lj_recdef.h $LJLIBS
-# host/buildvm -m libdef -o lj_libdef.h $LJLIBS
-# host/buildvm -m vmdef -o jit/vmdef.lua $LJLIBS
 
 vmdef = custom_target('vmdef.lua',
     input : ljlib_sources,
