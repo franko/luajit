@@ -13,7 +13,7 @@
 #include <stddef.h>
 
 /* Default path for loading Lua and C modules with require(). */
-#if defined(_WIN32)
+#if defined(_WIN32) && defined(LUAJIT_PORTABLE_INSTALL)
 /*
 ** In Windows, any exclamation mark ('!') in the path is replaced by the
 ** path of the directory of the executable file of the current process.

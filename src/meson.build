@@ -14,7 +14,17 @@ buildvm_commands = [
     {'mode': 'libdef',  'output': 'lj_libdef.h',  'input': ljlib_sources},
 ]
 
-lj_defines = ['-D_FILE_OFFSET_BITS=64', '-D_LARGEFILE_SOURCE', '-U_FORTIFY_SOURCE', '-DLUA_MULTILIB=lib']
+lj_defines = [
+    '-D_FILE_OFFSET_BITS=64',
+    '-D_LARGEFILE_SOURCE',
+    '-U_FORTIFY_SOURCE',
+    '-DLUA_MULTILIB="lib"',
+    '-DLUA_ROOT="' + get_option('prefix') + '"'
+]
+
+if get_option('portable')
+    lj_defines += '-DLUAJIT_PORTABLE_INSTALL'
+endif
 
 if host_machine.system() == 'windows'
     ljcore_sources += custom_target('lj_vm.obj',
