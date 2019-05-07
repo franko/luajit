@@ -68,6 +68,7 @@ libluajit = library(lj_libname, ljlib_sources + ljcore_sources + buildvm_headers
     include_directories: luajit_source_dir,
     c_args: lj_defines,
     name_prefix: lj_libprefix,
+    dependencies: luajit_dependencies,
     install: true
 )
 
@@ -75,7 +76,7 @@ luajit = executable('luajit', ljmain_sources,
     c_args: lj_defines,
     link_with: libluajit,
     include_directories: luajit_source_dir,
-    dependencies: [libm, libdl],
+    dependencies: luajit_dependencies,
     install: true
 )
 
