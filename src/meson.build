@@ -89,7 +89,4 @@ pkg.generate(libluajit,
 
 install_headers('lua.h', 'lualib.h', 'lauxlib.h', 'luaconf.h', 'lua.hpp', 'luajit.h')
 
-jitlib_install_dir = 'share' / ( 'luajit-' + meson.project_version() ) / 'jit'
-install_data('jit/bc.lua', 'jit/v.lua', 'jit/dump.lua', 'jit/dis_x86.lua', 'jit/dis_x64.lua', 'jit/dis_arm.lua', 'jit/dis_ppc.lua', 'jit/dis_mips.lua', 'jit/dis_mipsel.lua', 'jit/bcsave.lua', 'jit/vmdef.lua',
-    install_dir: jitlib_install_dir
-)
+subdir('jit')
