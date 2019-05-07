@@ -10,4 +10,6 @@ luajit_abiver = '51'
 
 dynasm = files('dynasm/dynasm.lua')
 
+install_man('etc/luajit.1')
+
 subdir('src')

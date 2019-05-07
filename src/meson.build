@@ -57,7 +57,8 @@ vmdef = custom_target('vmdef.lua',
 libluajit = library(lj_libname, ljlib_sources + ljcore_sources + buildvm_headers,
     include_directories: luajit_source_dir,
     c_args: lj_defines,
-    name_prefix: lj_libprefix
+    name_prefix: lj_libprefix,
+    install: true
 )
 
 luajit = executable('luajit', ljmain_sources,
@@ -73,4 +74,11 @@ pkg.generate(libluajit,
     name : 'LuaJIT',
     description : 'Just-in-time compiler for Lua',
     url : 'http://luajit.org',
+)
+
+install_headers('lua.h', 'lualib.h', 'lauxlib.h', 'luaconf.h', 'lua.hpp', 'luajit.h')
+
+jitlib_install_dir = 'share' / ( 'luajit-' + meson.project_version() ) / 'jit'
+install_data('jit/bc.lua', 'jit/v.lua', 'jit/dump.lua', 'jit/dis_x86.lua', 'jit/dis_x64.lua', 'jit/dis_arm.lua', 'jit/dis_ppc.lua', 'jit/dis_mips.lua', 'jit/dis_mipsel.lua', 'jit/bcsave.lua', 'jit/vmdef.lua',
+    install_dir: jitlib_install_dir
 )
