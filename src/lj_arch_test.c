@@ -10,6 +10,13 @@
 #define MAIN_SEPARATOR ":"
 #define DEFS_SEPARATOR ","
 
+static void add_def(const char *args[], int *args_n, const char *def) {
+	const int n = *args_n;
+	args[n] = "-D";
+	args[n + 1] = def;
+	*args_n = n + 2;
+}
+
 int main() {
 const char *lj_arch, *dasm_arch;
 const char *arch_defs[128];
@@ -45,56 +52,56 @@ const char *dasm[128];
 int dasm_n = 0;
 
 #if LJ_ARCH_BITS == 64
-dasm[dasm_n++] = "-D P64";
+add_def(dasm, &dasm_n, "P64");
 #endif
 #if LJ_HASJIT == 1
-dasm[dasm_n++] = "-D JIT";
+add_def(dasm, &dasm_n, "JIT");
 #endif
 #if LJ_HASFFI == 1
-dasm[dasm_n++] = "-D FFI";
+add_def(dasm, &dasm_n, "FFI");
 #endif
 #if LJ_DUALNUM == 1
-dasm[dasm_n++] = "-D DUALNUM";
+add_def(dasm, &dasm_n, "DUALNUM");
 #endif
 #if LJ_ARCH_HASFPU == 1
-dasm[dasm_n++] = "-D FPU";
+add_def(dasm, &dasm_n, "FPU");
 arch_defs[arch_defs_n++] = "-DLJ_ARCH_HASFPU=1";
 #else
 arch_defs[arch_defs_n++] = "-DLJ_ARCH_HASFPU=0";
 #endif
 #if LJ_ABI_SOFTFP == 1
-dasm[dasm_n++] = "-D HFABI";
+add_def(dasm, &dasm_n, "HFABI");
 /* Below is strange, the logic is inverted but so it is in the luajit's makefile. */
 arch_defs[arch_defs_n++] = "-DLJ_ABI_SOFTFP=0";
 #else
 arch_defs[arch_defs_n++] = "-DLJ_ABI_SOFTFP=1";
 #endif
 #if LJ_NO_UNWIND == 1
-dasm[dasm_n++] = "-D NO_UNWIND";
+add_def(dasm, &dasm_n, "NO_UNWIND");
 arch_defs[arch_defs_n++] = "-DLUAJIT_NO_UNWIND";
 #endif
 
 char arm_arch_version[16];
 #if LJ_ARCH_VERSION
-sprintf(arm_arch_version, "-D VER=%d", LJ_ARCH_VERSION);
+sprintf(arm_arch_version, "VER=%d", LJ_ARCH_VERSION);
 #else
-sprintf(arm_arch_version, "-D VER=");
+sprintf(arm_arch_version, "VER=");
 #endif
-dasm[dasm_n++] = arm_arch_version;
+add_def(dasm, &dasm_n, arm_arch_version);
 
 #ifdef _WIN32
-dasm[dasm_n++] = "-D WIN";
+add_def(dasm, &dasm_n, "WIN");
 #endif
 
 #if (!defined LJ_TARGET_X64 && defined LJ_TARGET_X86) && __SSE2__ == 1
-dasm[dasm_n++] = "-D SSE";
+add_def(dasm, &dasm_n, "SSE");
 #endif
 
 printf("%s%s%s%s", lj_arch, MAIN_SEPARATOR, dasm_arch, MAIN_SEPARATOR);
 for (int i = 0; i < arch_defs_n; i++) {
 	printf("%s%s", i > 0 ? DEFS_SEPARATOR : "", arch_defs[i]);
 }
-printf(",");
+printf("%s", MAIN_SEPARATOR);
 for (int i = 0; i < dasm_n; i++) {
 	printf("%s%s", i > 0 ? DEFS_SEPARATOR : "", dasm[i]);
 }
