@@ -7,66 +7,98 @@
 */
 
 #define QUOTE(X) #X
+#define MAIN_SEPARATOR ":"
+#define DEFS_SEPARATOR ","
 
 int main() {
+const char *lj_arch, *dasm_arch;
+const char *arch_defs[128];
+int arch_defs_n = 0;
 
 #ifdef LJ_TARGET_X64
-printf("%s %d\n", QUOTE(LJ_TARGET_X64), LJ_TARGET_X64);
-#endif
-#ifdef LJ_TARGET_X86
-printf("%s %d\n", QUOTE(LJ_TARGET_X86), LJ_TARGET_X86);
-#endif
-#ifdef LJ_TARGET_ARM
-printf("%s %d\n", QUOTE(LJ_TARGET_ARM), LJ_TARGET_ARM);
-#endif
-#ifdef LJ_TARGET_PPC
-printf("%s %d\n", QUOTE(LJ_TARGET_PPC), LJ_TARGET_PPC);
-#endif
-#ifdef LJ_TARGET_PPCSPE
-printf("%s %d\n", QUOTE(LJ_TARGET_PPCSPE), LJ_TARGET_PPCSPE);
-#endif
-#ifdef LJ_TARGET_MIPS
-printf("%s %d\n", QUOTE(LJ_TARGET_MIPS), LJ_TARGET_MIPS);
-#endif
+lj_arch = "x64";
+#elif LJ_TARGET_X86
+lj_arch = "x86";
+#elif LJ_TARGET_ARM
+lj_arch = "arm";
+#elif LJ_TARGET_PPC
+lj_arch = "ppc";
+#elif LJ_TARGET_PPCSPE
+lj_arch = "ppcspe";
+#elif LJ_TARGET_MIPS
+lj_arch = "mips";
 #ifdef MIPSEL
-printf("%s %d\n", QUOTE(MIPSEL), MIPSEL);
+arch_defs[arch_defs_n++] = "-D__MIPSEL__=1";
 #endif
-#ifdef LJ_TARGET_PS3
-printf("%s %d\n", QUOTE(LJ_TARGET_PS3), LJ_TARGET_PS3);
+#else
+fprintf(stderr, "Unsupported architecture\n");
+exit(1);
 #endif
-#ifdef LJ_ARCH_BITS
-printf("%s %d\n", QUOTE(LJ_ARCH_BITS), LJ_ARCH_BITS);
+
+#ifdef LJ_TARGET_X64
+dasm_arch = "x86";
+#else
+dasm_arch = lj_arch;
 #endif
-#ifdef LJ_HASJIT
-printf("%s %d\n", QUOTE(LJ_HASJIT), LJ_HASJIT);
+
+const char *dasm[128];
+int dasm_n = 0;
+
+#if LJ_ARCH_BITS == 64
+dasm[dasm_n++] = "-D P64";
 #endif
-#ifdef LJ_HASFFI
-printf("%s %d\n", QUOTE(LJ_HASFFI), LJ_HASFFI);
+#if LJ_HASJIT == 1
+dasm[dasm_n++] = "-D JIT";
 #endif
-#ifdef LJ_DUALNUM
-printf("%s %d\n", QUOTE(LJ_DUALNUM), LJ_DUALNUM);
+#if LJ_HASFFI == 1
+dasm[dasm_n++] = "-D FFI";
 #endif
-#ifdef LJ_ARCH_HASFPU
-printf("%s %d\n", QUOTE(LJ_ARCH_HASFPU), LJ_ARCH_HASFPU);
+#if LJ_DUALNUM == 1
+dasm[dasm_n++] = "-D DUALNUM";
 #endif
-#ifdef LJ_ABI_SOFTFP
-printf("%s %d\n", QUOTE(LJ_ABI_SOFTFP), LJ_ABI_SOFTFP);
+#if LJ_ARCH_HASFPU == 1
+dasm[dasm_n++] = "-D FPU";
+arch_defs[arch_defs_n++] = "-DLJ_ARCH_HASFPU=1";
+#else
+arch_defs[arch_defs_n++] = "-DLJ_ARCH_HASFPU=0";
 #endif
-#ifdef LJ_NO_UNWIND
-printf("%s %d\n", QUOTE(LJ_NO_UNWIND), LJ_NO_UNWIND);
+#if LJ_ABI_SOFTFP == 1
+dasm[dasm_n++] = "-D HFABI";
+/* Below is strange, the logic is inverted but so it is in the luajit's makefile. */
+arch_defs[arch_defs_n++] = "-DLJ_ABI_SOFTFP=0";
+#else
+arch_defs[arch_defs_n++] = "-DLJ_ABI_SOFTFP=1";
 #endif
-#ifdef __SSE2__
-printf("%s %d\n", QUOTE(__SSE2__), __SSE2__);
+#if LJ_NO_UNWIND == 1
+dasm[dasm_n++] = "-D NO_UNWIND";
+arch_defs[arch_defs_n++] = "-DLUAJIT_NO_UNWIND";
 #endif
-#ifdef LJ_ARCH_SQRT
-printf("%s %d\n", QUOTE(LJ_ARCH_SQRT), LJ_ARCH_SQRT);
+
+char arm_arch_version[16];
+#if LJ_ARCH_VERSION
+sprintf(arm_arch_version, "-D VER=%d", LJ_ARCH_VERSION);
+#else
+sprintf(arm_arch_version, "-D VER=");
 #endif
-#ifdef LJ_ARCH_ROUND
-printf("%s %d\n", QUOTE(LJ_ARCH_ROUND), LJ_ARCH_ROUND);
+dasm[dasm_n++] = arm_arch_version;
+
+#ifdef _WIN32
+dasm[dasm_n++] = "-D WIN";
 #endif
-#ifdef LJ_ARCH_PPC64
-printf("%s %d\n", QUOTE(LJ_ARCH_PPC64), LJ_ARCH_PPC64);
+
+#if (!defined LJ_TARGET_X64 && defined LJ_TARGET_X86) && __SSE2__ == 1
+dasm[dasm_n++] = "-D SSE";
 #endif
+
+printf("%s%s%s%s", lj_arch, MAIN_SEPARATOR, dasm_arch, MAIN_SEPARATOR);
+for (int i = 0; i < arch_defs_n; i++) {
+	printf("%s%s", i > 0 ? DEFS_SEPARATOR : "", arch_defs[i]);
+}
+printf(",");
+for (int i = 0; i < dasm_n; i++) {
+	printf("%s%s", i > 0 ? DEFS_SEPARATOR : "", dasm[i]);
+}
+printf("\n");
 
 return 0;
 }
