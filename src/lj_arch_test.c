@@ -74,11 +74,10 @@ arch_defs[arch_defs_n++] = "-DLJ_ARCH_HASFPU=1";
 arch_defs[arch_defs_n++] = "-DLJ_ARCH_HASFPU=0";
 #endif
 #if LJ_ABI_SOFTFP == 1
-add_def(dasm, &dasm_n, "HFABI");
-/* Below is strange, the logic is inverted but so it is in the luajit's makefile. */
-arch_defs[arch_defs_n++] = "-DLJ_ABI_SOFTFP=0";
-#else
 arch_defs[arch_defs_n++] = "-DLJ_ABI_SOFTFP=1";
+#else
+add_def(dasm, &dasm_n, "HFABI");
+arch_defs[arch_defs_n++] = "-DLJ_ABI_SOFTFP=0";
 #endif
 #if LJ_NO_UNWIND == 1
 add_def(dasm, &dasm_n, "NO_UNWIND");
