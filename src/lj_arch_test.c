@@ -42,6 +42,10 @@ fprintf(stderr, "Unsupported architecture\n");
 exit(1);
 #endif
 
+char luajit_target_def[128];
+sprintf(luajit_target_def, "-DLUAJIT_TARGET=LUAJIT_ARCH_%s", lj_arch);
+arch_defs[arch_defs_n++] = luajit_target_def;
+
 #ifdef LJ_TARGET_X64
 dasm_arch = "x86";
 #else

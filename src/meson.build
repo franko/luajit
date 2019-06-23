@@ -1,5 +1,3 @@
-vm_x86_dasc = files('vm_x86.dasc')
-
 lj_arch_test_file = files('lj_arch_test.c')
 jitlib_install_dir = 'share' / ( 'luajit-' + meson.project_version() ) / 'jit'
 
