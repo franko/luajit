@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include "lj_arch.h"
 
-/* Find all string used in Makefile with command
+/* Print in stdout the following string:
 
-   cat Makefile | awk '/findstring .+TARGET_TESTARCH/'
+   <TARGET_LJARCH>:<DASM ARCH>:<TARGET_ARCH>:<DASM_AFLAGS>
+
+   Where <TARGET_ARCH> are <DASM_AFLAGS> comma separated strings.
+
+   Each value correspond to the variable of the same name in Luajit's
+   original Makefile.
 */
 
-#define QUOTE(X) #X
 #define MAIN_SEPARATOR ":"
 #define DEFS_SEPARATOR ","
 
