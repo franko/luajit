@@ -11,6 +11,10 @@
    original Makefile.
 */
 
+/* NB This file is intentionally primitive and no dynamic memory is used.
+   It is not supposed to be a good, general purpose, programming style
+   but it is good enough to print some architecture details. */
+
 #define MAIN_SEPARATOR ":"
 #define DEFS_SEPARATOR ","
 
@@ -23,8 +27,9 @@ static void add_def(const char *args[], int *args_n, const char *def) {
 
 int main() {
 const char *lj_arch, *dasm_arch;
-const char *arch_defs[128];
+const char *arch_defs[16];
 int arch_defs_n = 0;
+const char *x_arch_option = NULL;
 
 #ifdef LJ_TARGET_X64
 lj_arch = "x64";
@@ -39,7 +44,7 @@ lj_arch = "ppcspe";
 #elif LJ_TARGET_MIPS
 lj_arch = "mips";
 #ifdef MIPSEL
-arch_defs[arch_defs_n++] = "-D__MIPSEL__=1";
+x_arch_option = "-D__MIPSEL__=1";
 #endif
 #else
 fprintf(stderr, "Unsupported architecture\n");
@@ -50,13 +55,17 @@ char luajit_target_def[128];
 sprintf(luajit_target_def, "-DLUAJIT_TARGET=LUAJIT_ARCH_%s", lj_arch);
 arch_defs[arch_defs_n++] = luajit_target_def;
 
+if (x_arch_option) {
+    arch_defs[arch_defs_n++] = x_arch_option;
+}
+
 #ifdef LJ_TARGET_X64
 dasm_arch = "x86";
 #else
 dasm_arch = lj_arch;
 #endif
 
-const char *dasm[128];
+const char *dasm[32];
 int dasm_n = 0;
 
 #if LJ_ARCH_BITS == 64
