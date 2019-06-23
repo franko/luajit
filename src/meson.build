@@ -1,4 +1,4 @@
-lj_arch_test_file = files('lj_arch_test.c')
+lj_arch_test_source = files('lj_arch_test.c')
 jitlib_install_dir = 'share' / ( 'luajit-' + meson.project_version() ) / 'jit'
 
 subdir('host')
