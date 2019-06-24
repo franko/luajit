@@ -1,4 +1,3 @@
-minilua = executable('minilua', 'minilua.c', dependencies: libm, install: false, native: true)
 
 lj_arch_run = cc.run(lj_arch_test_source)
 if not lj_arch_run.compiled() or lj_arch_run.returncode() != 0
@@ -15,11 +14,17 @@ lj_arch = lj_arch_list[0]
 dasm_arch = lj_arch_list[1]
 buildvm_defines = lj_arch_list[2].split(',')
 
+vm_dasc = files('../vm_' + dasm_arch + '.dasc')
+
+minilua = executable('minilua', 'minilua.c',
+    dependencies: libm,
+    c_args: buildvm_defines,
+    install: false,
+    native: true)
+
 dasm_args = [minilua, dynasm]
 dasm_args += lj_arch_list[3].split(',')
 dasm_args += ['-o', '@OUTPUT@', '@INPUT@']
-
-vm_dasc = files('../vm_' + dasm_arch + '.dasc')
 
 buildvm_arch_h = custom_target('buildvm_arch.h',
     input : vm_dasc,
