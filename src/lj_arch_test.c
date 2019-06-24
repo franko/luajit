@@ -121,7 +121,6 @@ printf("%s", MAIN_SEPARATOR);
 for (int i = 0; i < dasm_n; i++) {
 	printf("%s%s", i > 0 ? DEFS_SEPARATOR : "", dasm[i]);
 }
-printf("\n");
 
 return 0;
 }
