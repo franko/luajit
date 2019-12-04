@@ -35,6 +35,7 @@
 #if LJ_TARGET_DLOPEN
 
 #include <dlfcn.h>
+#include <unistd.h>
 
 static void ll_unloadlib(void *lib)
 {
@@ -63,6 +64,35 @@ static const char *ll_bcsym(void *lib, const char *sym)
   if (lib == NULL) lib = (void *)(intptr_t)-2;
 #endif
   return (const char *)dlsym(lib, sym);
+}
+
+#undef setprogdir
+
+// LINUX
+static void setprogdir(lua_State *L)
+{
+  char buff[256];
+  size_t nsize = sizeof(buff);
+  ssize_t n = readlink("/proc/self/exe", buff, nsize);
+  if (n >= nsize) {
+    luaL_error(L, "unable to get binary filename / name too long");
+    return;
+  }
+  buff[n] = '\0';
+  char *lb;
+  if (n == 0 || n == nsize || (lb = strrchr(buff, '/')) == NULL) {
+    luaL_error(L, "unable to get binary filename");
+  } else {
+    *lb = '\0';
+    if (strcmp(lb - 4, "/bin") == 0) {
+      lb = strrchr(buff, '/');
+      *lb = '\0';
+      luaL_gsub(L, lua_tostring(L, -1), LUA_EXECDIR, buff);
+      lua_remove(L, -2);  /* remove original string */
+    } else {
+      luaL_error(L, "unable to get bin directory");
+    }
+  }
 }
 
 #elif LJ_TARGET_WINDOWS

@@ -27,6 +27,10 @@ if get_option('portable')
     lj_defines += '-DLUAJIT_PORTABLE_INSTALL'
 endif
 
+if get_option('unified_portable')
+    lj_defines += '-DLUAJIT_UNIFIED_INSTALL'
+endif
+
 if host_machine.system() == 'windows'
     ljcore_sources += custom_target('lj_vm.obj',
         input : [],

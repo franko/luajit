@@ -12,6 +12,23 @@
 #include <limits.h>
 #include <stddef.h>
 
+#if defined(LUAJIT_UNIFIED_INSTALL)
+#if defined(_WIN32)
+#define LUA_LDIR    "!\\share\\luajit-2.0.5\\"
+#define LUA_CDIR    "!\\bin\\"
+#define LUA_PATH_DEFAULT \
+  ".\\?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?\\init.lua;"
+#define LUA_CPATH_DEFAULT \
+  ".\\?.dll;" LUA_CDIR"?.dll;" LUA_CDIR"loadall.dll"
+#else
+#define LUA_LDIR    "!/share/luajit-2.0.5/"
+#define LUA_CDIR    "!/bin/"
+#define LUA_PATH_DEFAULT \
+  "./?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?/init.lua;"
+#define LUA_CPATH_DEFAULT \
+  "./?.so;" LUA_CDIR"?.so;" LUA_CDIR"loadall.so"
+#endif
+#else
 /* Default path for loading Lua and C modules with require(). */
 #if defined(_WIN32) && defined(LUAJIT_PORTABLE_INSTALL)
 /*
@@ -60,6 +77,7 @@
 
 #define LUA_PATH_DEFAULT	"./?.lua" LUA_JPATH LUA_LLPATH LUA_RLPATH
 #define LUA_CPATH_DEFAULT	"./?.so" LUA_LCPATH1 LUA_RCPATH LUA_LCPATH2
+#endif
 #endif
 
 /* Environment variable names for path overrides and initialization code. */
