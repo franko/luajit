@@ -1,2 +1,2 @@
 option('portable', type : 'boolean', value : false, description: 'portable install in a single directory')
-option('unified_portable', type : 'boolean', value : false, description: 'unix-like portable install')
+option('relocatable', type : 'boolean', value : false, description: 'unix-like relocatable install')

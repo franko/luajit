@@ -13,15 +13,25 @@
 #include <stddef.h>
 
 #if defined(LUAJIT_UNIFIED_INSTALL)
+/*
+** Warning: this option is not present in the original Luajit but
+** was added by the lhelper's author. The lhelper application can be
+** found at https://github.com/franko/lhelper.git.
+**
+** When using relocatable install any exclamation mark ('!') in the path
+** is replaced by the path of the prefix directory. This latter is
+** determined as the directory of the executable file of the current
+** process minus the 'bin' subdirectory.
+*/
 #if defined(_WIN32)
-#define LUA_LDIR    "!\\share\\luajit-2.0.5\\"
+#define LUA_LDIR    "!\\share\\luajit-2\\"
 #define LUA_CDIR    "!\\bin\\"
 #define LUA_PATH_DEFAULT \
   ".\\?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?\\init.lua;"
 #define LUA_CPATH_DEFAULT \
   ".\\?.dll;" LUA_CDIR"?.dll;" LUA_CDIR"loadall.dll"
 #else
-#define LUA_LDIR    "!/share/luajit-2.0.5/"
+#define LUA_LDIR    "!/share/luajit-2/"
 #define LUA_CDIR    "!/bin/"
 #define LUA_PATH_DEFAULT \
   "./?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?/init.lua;"
