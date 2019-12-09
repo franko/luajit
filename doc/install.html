@@ -114,14 +114,14 @@ operating systems, CPUs and compilers:
 <td class="compatos">GCC 4.x+<br>GCC 3.4</td>
 <td class="compatos">GCC 4.x+<br>GCC 3.4</td>
 <td class="compatos">XCode 5.0+<br>Clang</td>
-<td class="compatos">MSVC, MSVC/EE<br>WinSDK<br>MinGW, Cygwin</td>
+<td class="compatos">MSVC<br>MinGW, Cygwin</td>
 </tr>
 <tr class="even">
 <td class="compatcpu">x64 (64 bit)</td>
 <td class="compatos">GCC 4.x+</td>
 <td class="compatos">ORBIS (<a href="#ps4">PS4</a>)</td>
 <td class="compatos">XCode 5.0+<br>Clang</td>
-<td class="compatos">MSVC + SDK v7.0<br>WinSDK v7.0</td>
+<td class="compatos">MSVC</td>
 </tr>
 <tr class="odd">
 <td class="compatcpu"><a href="#cross2">ARMv5+<br>ARM9E+</a></td>
@@ -166,7 +166,7 @@ only).</li>
 <li><tt>src/Makefile</tt> has settings for <b>compiling</b> LuaJIT
 under POSIX, MinGW or Cygwin.</li>
 <li><tt>src/msvcbuild.bat</tt> has settings for compiling LuaJIT with
-MSVC or WinSDK.</li>
+MSVC (Visual Studio).</li>
 </ul>
 <p>
 Please read the instructions given in these files, before changing
@@ -212,8 +212,8 @@ You can add an extra prefix to the search paths by appending the
 make PREFIX=/home/myself/lj2
 </pre>
 <p>
-Note for OSX: if the <tt>MACOSX_DEPLOYMENT_TARGET</tt> environment
-variable is not set, then it's forced to <tt>10.4</tt>.
+Note for OSX: you must set the <tt>MACOSX_DEPLOYMENT_TARGET</tt>
+environment variable to a value supported by your toolchain.
 </p>
 <h3>Installing LuaJIT</h3>
 <p>
@@ -243,17 +243,7 @@ Either install one of the open source SDKs
 (<a href="http://mingw.org/"><span class="ext">&raquo;</span>&nbsp;MinGW</a> or
 <a href="http://www.cygwin.com/"><span class="ext">&raquo;</span>&nbsp;Cygwin</a>), which come with a modified
 GCC plus the required development headers.
-</p>
-<p>
-Or install Microsoft's Visual C++ (MSVC). The freely downloadable
-<a href="http://www.microsoft.com/Express/VC/"><span class="ext">&raquo;</span>&nbsp;Express Edition</a>
-works just fine, but only contains an x86 compiler.
-</p>
-<p>
-The freely downloadable
-<a href="http://msdn.microsoft.com/en-us/windowsserver/bb980924.aspx"><span class="ext">&raquo;</span>&nbsp;Windows SDK</a>
-only comes with command line tools, but this is all you need to build LuaJIT.
-It contains x86 and x64 compilers.
+Or install Microsoft's Visual Studio (MSVC).
 </p>
 <p>
 Next, download the source package and unpack it using an archive manager
@@ -261,7 +251,7 @@ Next, download the source package and unpack it using an archive manager
 </p>
 <h3>Building with MSVC</h3>
 <p>
-Open a "Visual Studio .NET Command Prompt", <tt>cd</tt> to the
+Open a "Visual Studio Command Prompt" (either x86 or x64), <tt>cd</tt> to the
 directory where you've unpacked the sources and run these commands:
 </p>
 <pre class="code">
@@ -269,30 +259,7 @@ cd src
 msvcbuild
 </pre>
 <p>
-Then follow the installation instructions below.
-</p>
-<h3>Building with the Windows SDK</h3>
-<p>
-Open a "Windows SDK Command Shell" and select the x86 compiler:
-</p>
-<pre class="code">
-setenv /release /x86
-</pre>
-<p>
-Or select the x64 compiler:
-</p>
-<pre class="code">
-setenv /release /x64
-</pre>
-<p>
-Then <tt>cd</tt> to the directory where you've unpacked the sources
-and run these commands:
-</p>
-<pre class="code">
-cd src
-msvcbuild
-</pre>
-<p>
+Check the <tt>msvcbuild.bat</tt> file for more options.
 Then follow the installation instructions below.
 </p>
 <h3>Building with MinGW or Cygwin</h3>
@@ -396,67 +363,25 @@ make HOST_CC="gcc -m32" CROSS=mips-linux-
 make HOST_CC="gcc -m32" CROSS=mipsel-linux-
 </pre>
 <p>
-You can cross-compile for <b id="android">Android</b> using the <a href="http://developer.android.com/sdk/ndk/index.html"><span class="ext">&raquo;</span>&nbsp;Android NDK</a>.
-The environment variables need to match the install locations and the
-desired target platform. E.g. Android&nbsp;4.0 corresponds to ABI level&nbsp;14.
-For details check the folder <tt>docs</tt> in the NDK directory.
-</p>
-<p>
-Only a few common variations for the different CPUs, ABIs and platforms
-are listed. Please use your own judgement for which combination you want
-to build/deploy or which lowest common denominator you want to pick:
+You can cross-compile for <b id="android">Android</b> using the <a href="http://developer.android.com/ndk/"><span class="ext">&raquo;</span>&nbsp;Android NDK</a>.
+Please adapt the environment variables to match the install locations and the
+desired target platform. E.g. Android&nbsp;4.1 corresponds to ABI level&nbsp;16.
 </p>
 <pre class="code">
-# Android/ARM, armeabi (ARMv5TE soft-float), Android 2.2+ (Froyo)
-NDK=/opt/android/ndk
-NDKABI=8
-NDKVER=$NDK/toolchains/arm-linux-androideabi-4.6
-NDKP=$NDKVER/prebuilt/linux-x86/bin/arm-linux-androideabi-
-NDKF="--sysroot $NDK/platforms/android-$NDKABI/arch-arm"
-make HOST_CC="gcc -m32" CROSS=$NDKP TARGET_FLAGS="$NDKF"
+# Android/ARM, armeabi-v7a (ARMv7 VFP), Android 4.1+ (JB)
 
-# Android/ARM, armeabi-v7a (ARMv7 VFP), Android 4.0+ (ICS)
-NDK=/opt/android/ndk
-NDKABI=14
-NDKVER=$NDK/toolchains/arm-linux-androideabi-4.6
-NDKP=$NDKVER/prebuilt/linux-x86/bin/arm-linux-androideabi-
-NDKF="--sysroot $NDK/platforms/android-$NDKABI/arch-arm"
-NDKARCH="-march=armv7-a -mfloat-abi=softfp -Wl,--fix-cortex-a8"
-make HOST_CC="gcc -m32" CROSS=$NDKP TARGET_FLAGS="$NDKF $NDKARCH"
-
-# Android/MIPS, mips (MIPS32R1 hard-float), Android 4.0+ (ICS)
-NDK=/opt/android/ndk
-NDKABI=14
-NDKVER=$NDK/toolchains/mipsel-linux-android-4.6
-NDKP=$NDKVER/prebuilt/linux-x86/bin/mipsel-linux-android-
-NDKF="--sysroot $NDK/platforms/android-$NDKABI/arch-mips"
-make HOST_CC="gcc -m32" CROSS=$NDKP TARGET_FLAGS="$NDKF"
-
-# Android/x86, x86 (i686 SSE3), Android 4.0+ (ICS)
-NDK=/opt/android/ndk
-NDKABI=14
-NDKVER=$NDK/toolchains/x86-4.6
-NDKP=$NDKVER/prebuilt/linux-x86/bin/i686-linux-android-
-NDKF="--sysroot $NDK/platforms/android-$NDKABI/arch-x86"
-make HOST_CC="gcc -m32" CROSS=$NDKP TARGET_FLAGS="$NDKF"
+NDKDIR=/opt/android/ndk
+NDKBIN=$NDKDIR/toolchains/llvm/prebuilt/linux-x86_64/bin
+NDKCROSS=$NDKBIN/arm-linux-androideabi-
+NDKCC=$NDKBIN/armv7a-linux-androideabi16-clang
+make HOST_CC="gcc -m32" CROSS=$NDKCROSS \
+     STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
+     TARGET_LD=$NDKCC
 </pre>
 <p>
-You can cross-compile for <b id="ios">iOS 3.0+</b> (iPhone/iPad) using the <a href="http://developer.apple.com/devcenter/ios/index.action"><span class="ext">&raquo;</span>&nbsp;iOS SDK</a>:
+Please use the LuaJIT 2.1 branch to compile for
+<b id="ios">iOS</b> (iPhone/iPad).
 </p>
-<p style="font-size: 8pt;">
-Note: <b>the JIT compiler is disabled for iOS</b>, because regular iOS Apps
-are not allowed to generate code at runtime. You'll only get the performance
-of the LuaJIT interpreter on iOS. This is still faster than plain Lua, but
-much slower than the JIT compiler. Please complain to Apple, not me.
-Or use Android. :-p
-</p>
-<pre class="code">
-ISDKP=$(xcrun --sdk iphoneos --show-sdk-path)
-ICC=$(xcrun --sdk iphoneos --find clang)
-ISDKF="-arch armv7 -isysroot $ISDKP"
-make DEFAULT_CC=clang HOST_CC="clang -m32 -arch i386" \
-     CROSS="$(dirname $ICC)/" TARGET_FLAGS="$ISDKF" TARGET_SYS=iOS
-</pre>
 
 <h3 id="consoles">Cross-compiling for consoles</h3>
 <p>
