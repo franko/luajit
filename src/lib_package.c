@@ -66,7 +66,7 @@ static const char *ll_bcsym(void *lib, const char *sym)
   return (const char *)dlsym(lib, sym);
 }
 
-#if defined(LUAJIT_UNIFIED_INSTALL)
+#if defined(LUAJIT_PORTABLE_INSTALL)
 #undef setprogdir
 
 static void setprogdir(lua_State *L)
@@ -84,14 +84,8 @@ static void setprogdir(lua_State *L)
     luaL_error(L, "unable to get binary filename");
   } else {
     *lb = '\0';
-    if (lb - buff >= 4 && strcmp(lb - 4, "/bin") == 0) {
-      lb -= 4;
-      *lb = '\0';
-      luaL_gsub(L, lua_tostring(L, -1), LUA_EXECDIR, buff);
-      lua_remove(L, -2);  /* remove original string */
-    } else {
-      luaL_error(L, "unable to get bin directory");
-    }
+    luaL_gsub(L, lua_tostring(L, -1), LUA_EXECDIR, buff);
+    lua_remove(L, -2);  /* remove original string */
   }
 }
 #endif
@@ -119,14 +113,6 @@ static void setprogdir(lua_State *L)
     luaL_error(L, "unable to get ModuleFileName");
   } else {
     *lb = '\0';
-#if defined(LUAJIT_UNIFIED_INSTALL)
-    if (lb - buff >= 4 && strcmp(lb - 4, "\\bin") == 0) {
-      lb -= 4;
-      *lb = '\0';
-    } else {
-      luaL_error(L, "unable to get bin directory");
-    }
-#endif
     luaL_gsub(L, lua_tostring(L, -1), LUA_EXECDIR, buff);
     lua_remove(L, -2);  /* remove original string */
   }

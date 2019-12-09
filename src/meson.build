@@ -1,9 +1,11 @@
 lj_arch_test_source = files('lj_arch_test.c')
-if get_option('relocatable')
-    jitlib_install_dir = 'share' / 'luajit-2' / 'jit'
+
+if get_option('portable')
+    jitlib_install_dir = get_option('bindir') / 'lua' / 'jit'
 else
     jitlib_install_dir = 'share' / ( 'luajit-' + meson.project_version() ) / 'jit'
 endif
+
 subdir('host')
 
 ljlib_sources = ['lib_base.c', 'lib_math.c', 'lib_bit.c', 'lib_string.c', 'lib_table.c', 'lib_io.c', 'lib_os.c', 'lib_package.c', 'lib_debug.c', 'lib_jit.c', 'lib_ffi.c']
@@ -28,10 +30,6 @@ lj_defines = [
 
 if get_option('portable')
     lj_defines += '-DLUAJIT_PORTABLE_INSTALL'
-endif
-
-if get_option('relocatable')
-    lj_defines += '-DLUAJIT_UNIFIED_INSTALL'
 endif
 
 if host_machine.system() == 'windows'

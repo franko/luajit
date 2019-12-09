@@ -12,35 +12,8 @@
 #include <limits.h>
 #include <stddef.h>
 
-#if defined(LUAJIT_UNIFIED_INSTALL)
-/*
-** Warning: this option is not present in the original Luajit but
-** was added by the lhelper's author. The lhelper application can be
-** found at https://github.com/franko/lhelper.git.
-**
-** When using relocatable install any exclamation mark ('!') in the path
-** is replaced by the path of the prefix directory. This latter is
-** determined as the directory of the executable file of the current
-** process minus the 'bin' subdirectory.
-*/
-#if defined(_WIN32)
-#define LUA_LDIR    "!\\share\\luajit-2\\"
-#define LUA_CDIR    "!\\bin\\"
-#define LUA_PATH_DEFAULT \
-  ".\\?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?\\init.lua;"
-#define LUA_CPATH_DEFAULT \
-  ".\\?.dll;" LUA_CDIR"?.dll;" LUA_CDIR"loadall.dll"
-#else
-#define LUA_LDIR    "!/share/luajit-2/"
-#define LUA_CDIR    "!/bin/"
-#define LUA_PATH_DEFAULT \
-  "./?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?/init.lua;"
-#define LUA_CPATH_DEFAULT \
-  "./?.so;" LUA_CDIR"?.so;" LUA_CDIR"loadall.so"
-#endif
-#else
 /* Default path for loading Lua and C modules with require(). */
-#if defined(_WIN32) && defined(LUAJIT_PORTABLE_INSTALL)
+#if defined(LUAJIT_PORTABLE_INSTALL)
 /*
 ** In Windows, any exclamation mark ('!') in the path is replaced by the
 ** path of the directory of the executable file of the current process.
@@ -49,8 +22,13 @@
 #define LUA_CDIR	"!\\"
 #define LUA_PATH_DEFAULT \
   ".\\?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?\\init.lua;"
+#if defined(_WIN32)
 #define LUA_CPATH_DEFAULT \
   ".\\?.dll;" LUA_CDIR"?.dll;" LUA_CDIR"loadall.dll"
+#else
+#define LUA_CPATH_DEFAULT \
+  ".\\?.so;" LUA_CDIR"?.so;" LUA_CDIR"loadall.so"
+#endif
 #else
 /*
 ** Note to distribution maintainers: do NOT patch the following lines!
@@ -87,7 +65,6 @@
 
 #define LUA_PATH_DEFAULT	"./?.lua" LUA_JPATH LUA_LLPATH LUA_RLPATH
 #define LUA_CPATH_DEFAULT	"./?.so" LUA_LCPATH1 LUA_RCPATH LUA_LCPATH2
-#endif
 #endif
 
 /* Environment variable names for path overrides and initialization code. */
