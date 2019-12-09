@@ -17,6 +17,10 @@
 /*
 ** In Windows, any exclamation mark ('!') in the path is replaced by the
 ** path of the directory of the executable file of the current process.
+**
+** Modification for lhelper (https://github.com/franko/lhelper.git):
+** Use the exclamation mark ('!') also on unix-like system if the
+** portable option is enabled.
 */
 #if defined(_WIN32)
 #define LUA_LDIR	"!\\lua\\"
