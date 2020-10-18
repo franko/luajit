@@ -1,6 +1,6 @@
 |// Low-level VM code for MIPS CPUs.
 |// Bytecode interpreter, fast functions and helper functions.
-|// Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+|// Copyright (C) 2005-2020 Mike Pall. See Copyright Notice in luajit.h
 |
 |.arch mips
 |.section code_op, code_sub
@@ -2163,9 +2163,8 @@ static void build_subroutines(BuildCtx *ctx)
   |.  addu RA, RA, BASE
   |
   |3:  // Rethrow error from the right C frame.
-  |  load_got lj_err_throw
-  |  negu CARG2, CRET1
-  |  call_intern lj_err_throw		// (lua_State *L, int errcode)
+  |  load_got lj_err_run
+  |  call_intern lj_err_run		// (lua_State *L)
   |.  move CARG1, L
   |.endif
   |

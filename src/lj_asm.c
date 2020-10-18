@@ -1,6 +1,6 @@
 /*
 ** IR assembler (SSA IR -> machine code).
-** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2020 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #define lj_asm_c
@@ -1833,7 +1833,7 @@ void lj_asm_trace(jit_State *J, GCtrace *T)
 
   /* Ensure an initialized instruction beyond the last one for HIOP checks. */
   J->cur.nins = lj_ir_nextins(J);
-  J->cur.ir[J->cur.nins].o = IR_NOP;
+  lj_ir_nop(&J->cur.ir[J->cur.nins]);
 
   /* Setup initial state. Copy some fields to reduce indirections. */
   as->J = J;

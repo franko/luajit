@@ -1,6 +1,6 @@
 |// Low-level VM code for ARM CPUs.
 |// Bytecode interpreter, fast functions and helper functions.
-|// Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+|// Copyright (C) 2005-2020 Mike Pall. See Copyright Notice in luajit.h
 |
 |.arch arm
 |.section code_op, code_sub
@@ -2201,9 +2201,8 @@ static void build_subroutines(BuildCtx *ctx)
   |  bx OP
   |
   |3:  // Rethrow error from the right C frame.
-  |  rsb CARG2, CARG1, #0
   |  mov CARG1, L
-  |  bl extern lj_err_throw		// (lua_State *L, int errcode)
+  |  bl extern lj_err_run		// (lua_State *L)
   |.endif
   |
   |//-----------------------------------------------------------------------

@@ -1,6 +1,6 @@
 |// Low-level VM code for PowerPC CPUs.
 |// Bytecode interpreter, fast functions and helper functions.
-|// Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+|// Copyright (C) 2005-2020 Mike Pall. See Copyright Notice in luajit.h
 |
 |.arch ppc
 |.section code_op, code_sub
@@ -2699,9 +2699,8 @@ static void build_subroutines(BuildCtx *ctx)
   |  bctr
   |
   |3:  // Rethrow error from the right C frame.
-  |  neg CARG2, CARG1
   |  mr CARG1, L
-  |  bl extern lj_err_throw		// (lua_State *L, int errcode)
+  |  bl extern lj_err_run		// (lua_State *L)
   |.endif
   |
   |//-----------------------------------------------------------------------
