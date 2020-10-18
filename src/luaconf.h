@@ -13,17 +13,30 @@
 #include <stddef.h>
 
 /* Default path for loading Lua and C modules with require(). */
-#if defined(_WIN32)
+#if defined(LUAJIT_PORTABLE_INSTALL)
 /*
 ** In Windows, any exclamation mark ('!') in the path is replaced by the
 ** path of the directory of the executable file of the current process.
+**
+** Modification for lhelper (https://github.com/franko/lhelper.git):
+** Use the exclamation mark ('!') also on unix-like system if the
+** portable option is enabled.
 */
+#if defined(_WIN32)
 #define LUA_LDIR	"!\\lua\\"
 #define LUA_CDIR	"!\\"
 #define LUA_PATH_DEFAULT \
   ".\\?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?\\init.lua;"
 #define LUA_CPATH_DEFAULT \
   ".\\?.dll;" LUA_CDIR"?.dll;" LUA_CDIR"loadall.dll"
+#else
+#define LUA_LDIR    "!/lua/"
+#define LUA_CDIR    "!/"
+#define LUA_PATH_DEFAULT \
+  "./?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?/init.lua;"
+#define LUA_CPATH_DEFAULT \
+  "./?.so;" LUA_CDIR"?.so;" LUA_CDIR"loadall.so"
+#endif
 #else
 /*
 ** Note to distribution maintainers: do NOT patch the following lines!
