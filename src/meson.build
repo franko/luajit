@@ -43,10 +43,6 @@ lj_defines = [
     '-DLUA_ROOT="' + get_option('prefix') + '"'
 ]
 
-if not get_option('gc64')
-    lj_defines += '-DLUAJIT_DISABLE_GC64'
-endif
-
 if get_option('portable')
     lj_defines += '-DLUAJIT_PORTABLE_INSTALL'
 endif
