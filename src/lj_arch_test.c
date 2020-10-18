@@ -68,6 +68,11 @@ dasm_arch = lj_arch;
 const char *dasm[32];
 int dasm_n = 0;
 
+#ifdef LJ_LE
+add_def(dasm, &dasm_n, "ENDIAN_LE");
+#else
+add_def(dasm, &dasm_n, "ENDIAN_BE");
+#endif
 #if LJ_ARCH_BITS == 64
 add_def(dasm, &dasm_n, "P64");
 #endif
@@ -111,12 +116,6 @@ add_def(dasm, &dasm_n, "WIN");
 
 #if (!defined LJ_TARGET_X64 && defined LJ_TARGET_X86) && __SSE2__ == 1
 add_def(dasm, &dasm_n, "SSE");
-#endif
-
-#ifdef LJ_LE
-add_def(dasm, &dasm_n, "ENDIAN_LE");
-#else
-add_def(dasm, &dasm_n, "ENDIAN_BE");
 #endif
 
 printf("%s%s%s%s", lj_arch, MAIN_SEPARATOR, dasm_arch, MAIN_SEPARATOR);
