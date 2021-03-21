@@ -80,12 +80,20 @@ libluajit = library(lj_libname, ljlib_sources + ljcore_sources + buildvm_headers
     install: true
 )
 
-luajit = executable('luajit', ljmain_sources,
-    c_args: lj_defines,
-    link_with: libluajit,
-    include_directories: luajit_source_dir,
-    dependencies: luajit_dependencies,
-    install: true
+if get_option('app')
+    luajit = executable('luajit', ljmain_sources,
+        c_args: lj_defines,
+        link_with: libluajit,
+        include_directories: luajit_source_dir,
+        dependencies: luajit_dependencies,
+        install: true
+    )
+endif
+
+lua_dep = declare_dependency(
+    dependencies : luajit_dependencies,
+    include_directories : luajit_source_dir,
+    link_with : libluajit,
 )
 
 pkg.generate(libluajit,
