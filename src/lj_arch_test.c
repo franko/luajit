@@ -26,7 +26,7 @@ static void add_def(const char *args[], int *args_n, const char *def) {
 }
 
 int main() {
-const char *lj_arch, *dasm_arch;
+const char *lj_arch, *lj_os, *dasm_arch;
 const char *arch_defs[16];
 int arch_defs_n = 0;
 const char *x_arch_option = NULL;
@@ -58,6 +58,27 @@ arch_defs[arch_defs_n++] = luajit_target_def;
 if (x_arch_option) {
     arch_defs[arch_defs_n++] = x_arch_option;
 }
+
+#if LUAJIT_OS == LUAJIT_OS_OTHER
+lj_os = "OTHER";
+#elif LUAJIT_OS == LUAJIT_OS_WINDOWS
+lj_os = "WINDOWS";
+#elif LUAJIT_OS == LUAJIT_OS_LINUX
+lj_os = "LINUX";
+#elif LUAJIT_OS == LUAJIT_OS_OSX
+lj_os = "OSX";
+#elif LUAJIT_OS == LUAJIT_OS_BSD
+lj_os = "BSD";
+#elif LUAJIT_OS == LUAJIT_OS_POSIX
+lj_os = "POSIX";
+#else
+fprintf(stderr, "Unsupported OS\n");
+exit(1);
+#endif
+
+char luajit_os_def[128];
+sprintf(luajit_os_def, "-DLUAJIT_OS=LUAJIT_OS_%s", lj_os);
+arch_defs[arch_defs_n++] = luajit_os_def;
 
 #ifdef LJ_TARGET_X64
 dasm_arch = "x86";

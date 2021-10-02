@@ -1,6 +1,6 @@
 /*
 ** Trace management.
-** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2021 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #define lj_trace_c
@@ -452,7 +452,11 @@ static void trace_stop(jit_State *J)
     lua_assert(J->parent != 0 && J->cur.root != 0);
     lj_asm_patchexit(J, traceref(J, J->parent), J->exitno, J->cur.mcode);
     /* Avoid compiling a side trace twice (stack resizing uses parent exit). */
-    traceref(J, J->parent)->snap[J->exitno].count = SNAPCOUNT_DONE;
+    {
+      SnapShot *snap = &traceref(J, J->parent)->snap[J->exitno];
+      snap->count = SNAPCOUNT_DONE;
+      if (J->cur.topslot > snap->topslot) snap->topslot = J->cur.topslot;
+    }
     /* Add to side trace chain in root trace. */
     {
       GCtrace *root = traceref(J, J->cur.root);
@@ -700,7 +704,9 @@ typedef struct ExitDataCP {
 static TValue *trace_exit_cp(lua_State *L, lua_CFunction dummy, void *ud)
 {
   ExitDataCP *exd = (ExitDataCP *)ud;
-  cframe_errfunc(L->cframe) = -1;  /* Inherit error function. */
+  /* Always catch error here and don't call error function. */
+  cframe_errfunc(L->cframe) = 0;
+  cframe_nres(L->cframe) = -2*LUAI_MAXSTACK*(int)sizeof(TValue);
   exd->pc = lj_snap_restore(exd->J, exd->exptr);
   UNUSED(dummy);
   return NULL;

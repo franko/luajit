@@ -1,6 +1,6 @@
 /*
 ** Package library.
-** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2021 Mike Pall. See Copyright Notice in luajit.h
 **
 ** Major portions taken verbatim or adapted from the Lua interpreter.
 ** Copyright (C) 1994-2012 Lua.org, PUC-Rio. See Copyright Notice in lua.h
@@ -233,7 +233,12 @@ static const char *mksymname(lua_State *L, const char *modname,
 
 static int ll_loadfunc(lua_State *L, const char *path, const char *name, int r)
 {
-  void **reg = ll_register(L, path);
+  void **reg;
+  if (strlen(path) >= 4096) {
+    lua_pushliteral(L, "path too long");
+    return PACKAGE_ERR_LIB;
+  }
+  reg = ll_register(L, path);
   if (*reg == NULL) *reg = ll_load(L, path, (*name == '*'));
   if (*reg == NULL) {
     return PACKAGE_ERR_LIB;  /* Unable to load library. */

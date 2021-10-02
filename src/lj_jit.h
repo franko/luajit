@@ -1,6 +1,6 @@
 /*
 ** Common definitions for the JIT compiler.
-** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2021 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #ifndef _LJ_JIT_H
@@ -406,11 +406,7 @@ typedef struct jit_State {
   size_t szallmcarea;	/* Total size of all allocated mcode areas. */
 
   TValue errinfo;	/* Additional info element for trace errors. */
-}
-#if LJ_TARGET_ARM
-LJ_ALIGN(16)		/* For DISPATCH-relative addresses in assembler part. */
-#endif
-jit_State;
+} jit_State;
 
 /* Trivial PRNG e.g. used for penalty randomization. */
 static LJ_AINLINE uint32_t LJ_PRNG_BITS(jit_State *J, int bits)

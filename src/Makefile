@@ -7,7 +7,7 @@
 # Also works with MinGW and Cygwin on Windows.
 # Please check msvcbuild.bat for building with MSVC on Windows.
 #
-# Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+# Copyright (C) 2005-2021 Mike Pall. See Copyright Notice in luajit.h
 ##############################################################################
 
 MAJVER=  2
@@ -296,7 +296,6 @@ ifeq (Windows,$(TARGET_SYS))
   TARGET_STRIP+= --strip-unneeded
   TARGET_XSHLDFLAGS= -shared -Wl,--out-implib,$(TARGET_DLLDOTANAME)
   TARGET_DYNXLDOPTS=
-  HOST_RM= del
 else
   TARGET_AR+= 2>/dev/null
 ifeq (,$(shell $(TARGET_CC) -o /dev/null -c -x c /dev/null -fno-stack-protector 2>/dev/null || echo 1))
@@ -540,6 +539,7 @@ ifeq (Windows,$(HOST_SYS))
     MINILUA_X= host\minilua
     BUILDVM_X= host\buildvm
     ALL_RM:= $(subst /,\,$(ALL_RM))
+    HOST_RM= del
   endif
 endif
 
@@ -610,7 +610,7 @@ $(MINILUA_T): $(MINILUA_O)
 	$(E) "HOSTLINK  $@"
 	$(Q)$(HOST_CC) $(HOST_ALDFLAGS) -o $@ $(MINILUA_O) $(MINILUA_LIBS) $(HOST_ALIBS)
 
-host/buildvm_arch.h: $(DASM_DASC) $(DASM_DEP)
+host/buildvm_arch.h: $(DASM_DASC) $(DASM_DEP) lj_arch.h lua.h luaconf.h
 	$(E) "DYNASM    $@"
 	$(Q)$(DASM) $(DASM_FLAGS) -o $@ $(DASM_DASC)
 

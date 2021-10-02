@@ -1,6 +1,6 @@
 /*
 ** SSA IR (Intermediate Representation) format.
-** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2021 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #ifndef _LJ_IR_H
@@ -126,7 +126,7 @@
   _(XBAR,	S , ___, ___) \
   \
   /* Type conversions. */ \
-  _(CONV,	NW, ref, lit) \
+  _(CONV,	N , ref, lit) \
   _(TOBIT,	N , ref, ref) \
   _(TOSTR,	N , ref, ___) \
   _(STRTO,	N , ref, ___) \
@@ -547,5 +547,13 @@ static LJ_AINLINE int ir_sideeff(IRIns *ir)
 }
 
 LJ_STATIC_ASSERT((int)IRT_GUARD == (int)IRM_W);
+
+/* Replace IR instruction with NOP. */
+static LJ_AINLINE void lj_ir_nop(IRIns *ir)
+{
+  ir->ot = IRT(IR_NOP, IRT_NIL);
+  ir->op1 = ir->op2 = 0;
+  ir->prev = 0;
+}
 
 #endif

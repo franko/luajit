@@ -1,6 +1,6 @@
 /*
 ** Error handling.
-** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2021 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #define lj_err_c
@@ -529,6 +529,7 @@ static ptrdiff_t finderrfunc(lua_State *L)
       if (cframe_canyield(cf)) return 0;
       if (cframe_errfunc(cf) >= 0)
 	return cframe_errfunc(cf);
+      cf = cframe_prev(cf);
       frame = frame_prevd(frame);
       break;
     case FRAME_PCALL:
@@ -545,7 +546,7 @@ static ptrdiff_t finderrfunc(lua_State *L)
 }
 
 /* Runtime error. */
-LJ_NOINLINE void lj_err_run(lua_State *L)
+LJ_NOINLINE void LJ_FASTCALL lj_err_run(lua_State *L)
 {
   ptrdiff_t ef = finderrfunc(L);
   if (ef) {
