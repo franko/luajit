@@ -111,12 +111,6 @@ lua_dep = declare_dependency(
     link_with : libluajit,
 )
 
-luajit_dep = declare_dependency(
-    dependencies : luajit_dependencies,
-    include_directories : luajit_source_dir,
-    link_with : libluajit,
-)
-
 pkg.generate(libluajit,
     filebase : 'luajit',
     name : 'LuaJIT',
