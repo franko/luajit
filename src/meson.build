@@ -28,10 +28,15 @@ lj_defines = [
     '-DLUA_ROOT="' + get_option('prefix') + '"'
 ]
 
+if host_machine.system() == 'darwin'
+    lj_defines += '-mmacosx-version-min=10.11'
+endif
+
 if get_option('portable')
     lj_defines += '-DLUAJIT_PORTABLE_INSTALL'
 endif
 
+lj_linkargs = []
 if host_machine.system() == 'windows'
     ljcore_sources += custom_target('lj_vm.obj',
         input : [],
@@ -44,6 +49,15 @@ if host_machine.system() == 'windows'
     endif
     lj_libname = 'lua' + luajit_abiver
     lj_libprefix = ''
+elif host_machine.system() == 'darwin'
+    ljcore_sources += custom_target('lj_vm.s',
+        input : [],
+        output : 'lj_vm.s',
+        command : [buildvm, '-m', 'machasm', '-o', '@OUTPUT@']
+    )
+    lj_libname = 'luajit'
+    lj_libprefix = 'lib'
+    lj_linkargs += ['-pagezero_size', '10000', '-image_base', '100000000']
 else
     ljcore_sources += custom_target('lj_vm.s',
         input : [],
@@ -83,6 +97,7 @@ libluajit = library(lj_libname, ljlib_sources + ljcore_sources + buildvm_headers
 if get_option('app')
     luajit = executable('luajit', ljmain_sources,
         c_args: lj_defines,
+        link_args: lj_linkargs,
         link_with: libluajit,
         include_directories: luajit_source_dir,
         dependencies: luajit_dependencies,
