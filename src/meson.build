@@ -52,6 +52,10 @@ if get_option('portable')
 endif
 
 lj_linkargs = []
+if get_option('shortfnsyn')
+    lj_defines += '-DUSE_SHORT_FN_SYNTAX'
+endif
+
 if host_machine.system() == 'windows'
     ljcore_sources += custom_target('lj_vm.obj',
         input : [],
