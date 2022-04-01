@@ -92,6 +92,9 @@ BUILDMODE= mixed
 # recompile with "make clean", followed by "make".
 XCFLAGS=
 #
+# Enable short function syntax in the form "|a, b| a + 2*b".
+XCFLAGS+= -DUSE_SHORT_FN_SYNTAX
+#
 # Permanently disable the FFI extension to reduce the size of the LuaJIT
 # executable. But please consider that the FFI library is compiled-in,
 # but NOT loaded by default. It only allocates any memory, if you actually
