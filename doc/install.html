@@ -3,7 +3,7 @@
 <head>
 <title>Installation</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<meta name="Copyright" content="Copyright (C) 2005-2021">
+<meta name="Copyright" content="Copyright (C) 2005-2022">
 <meta name="Language" content="en">
 <link rel="stylesheet" type="text/css" href="bluequad.css" media="screen">
 <link rel="stylesheet" type="text/css" href="bluequad-print.css" media="print">
@@ -380,7 +380,8 @@ NDKCROSS=$NDKBIN/arm-linux-androideabi-
 NDKCC=$NDKBIN/armv7a-linux-androideabi16-clang
 make HOST_CC="gcc -m32" CROSS=$NDKCROSS \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
-     TARGET_LD=$NDKCC
+     TARGET_LD=$NDKCC TARGET_AR="$NDKBIN/llvm-ar rcus" \
+     TARGET_STRIP=$NDKBIN/llvm-strip
 </pre>
 <p>
 Please use the LuaJIT 2.1 branch to compile for
@@ -563,7 +564,7 @@ to me (the upstream) and not you (the package maintainer), anyway.
 </div>
 <div id="foot">
 <hr class="hide">
-Copyright &copy; 2005-2021
+Copyright &copy; 2005-2022
 <span class="noprint">
 &middot;
 <a href="contact.html">Contact</a>
