@@ -36,6 +36,10 @@ if get_option('portable')
     lj_defines += '-DLUAJIT_PORTABLE_INSTALL'
 endif
 
+if get_option('shortfnsyn')
+    lj_defines += '-DUSE_SHORT_FN_SYNTAX'
+endif
+
 lj_linkargs = []
 if host_machine.system() == 'windows'
     ljcore_sources += custom_target('lj_vm.obj',
