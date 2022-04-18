@@ -37,6 +37,8 @@ lj_arch = "x64";
 lj_arch = "x86";
 #elif LJ_TARGET_ARM
 lj_arch = "arm";
+#elif LJ_TARGET_ARM64
+lj_arch = "arm64";
 #elif LJ_TARGET_PPC
 lj_arch = "ppc";
 #elif LJ_TARGET_PPCSPE
