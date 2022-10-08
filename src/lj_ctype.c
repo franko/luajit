@@ -1,6 +1,6 @@
 /*
 ** C type management.
-** Copyright (C) 2005-2020 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2022 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #include "lj_obj.h"
@@ -333,6 +333,14 @@ CTInfo lj_ctype_info(CTState *cts, CTypeID id, CTSize *szp)
   return qual;
 }
 
+/* Ditto, but follow a reference. */
+CTInfo lj_ctype_info_raw(CTState *cts, CTypeID id, CTSize *szp)
+{
+  CType *ct = ctype_get(cts, id);
+  if (ctype_isref(ct->info)) id = ctype_cid(ct->info);
+  return lj_ctype_info(cts, id, szp);
+}
+
 /* Get ctype metamethod. */
 cTValue *lj_ctype_meta(CTState *cts, CTypeID id, MMS mm)
 {
@@ -583,7 +591,7 @@ GCstr *lj_ctype_repr_complex(lua_State *L, void *sp, CTSize size)
   lj_strfmt_putfnum(sb, STRFMT_G14, re.n);
   if (!(im.u32.hi & 0x80000000u) || im.n != im.n) lj_buf_putchar(sb, '+');
   lj_strfmt_putfnum(sb, STRFMT_G14, im.n);
-  lj_buf_putchar(sb, sbufP(sb)[-1] >= 'a' ? 'I' : 'i');
+  lj_buf_putchar(sb, sb->w[-1] >= 'a' ? 'I' : 'i');
   return lj_buf_str(L, sb);
 }
 
