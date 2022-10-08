@@ -72,7 +72,9 @@ elif host_machine.system() == 'darwin'
     )
     lj_libname = 'luajit'
     lj_libprefix = 'lib'
-    lj_linkargs += ['-pagezero_size', '10000', '-image_base', '100000000']
+    if host_machine.cpu_family() == 'x86_64'
+        lj_linkargs += ['-pagezero_size', '10000', '-image_base', '100000000']
+    endif
 else
     ljcore_sources += custom_target('lj_vm.s',
         input : [],
