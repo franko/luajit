@@ -46,7 +46,15 @@ lj_defines = [
 ]
 
 if host_machine.system() == 'darwin'
-    lj_defines += '-mmacosx-version-min=10.11'
+    lj_defines += '-DLUAJIT_UNWIND_EXTERNAL'
+    lj_defines += '-mmacosx-version-min=' + get_option('macos_target')
+elif host_machine.system() != 'windows'
+    if 'NO_UNWIND' in dasm_args
+        test_unwind = run_command('test-unwind.sh', ' '.join(cc.cmd_array()), check : false)
+        if test_unwind.stdout().strip() == 'E'
+            lj_defines += '-DLUAJIT_UNWIND_EXTERNAL'
+        endif
+    endif
 endif
 
 if get_option('portable')
@@ -74,9 +82,6 @@ elif host_machine.system() == 'darwin'
     )
     lj_libname = 'luajit'
     lj_libprefix = 'lib'
-    if host_machine.cpu_family() == 'x86_64'
-        lj_linkargs += ['-pagezero_size', '10000', '-image_base', '100000000']
-    endif
 else
     ljcore_sources += custom_target('lj_vm.s',
         input : [],
