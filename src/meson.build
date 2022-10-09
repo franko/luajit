@@ -10,12 +10,14 @@ subdir('host')
 
 ljlib_sources = [
     'lib_base.c', 'lib_math.c', 'lib_bit.c', 'lib_string.c', 'lib_table.c',
-    'lib_io.c', 'lib_os.c', 'lib_package.c', 'lib_debug.c', 'lib_jit.c', 'lib_ffi.c']
+    'lib_io.c', 'lib_os.c', 'lib_package.c', 'lib_debug.c', 'lib_jit.c', 'lib_ffi.c',
+    'lib_buffer.c']
 ljcore_sources = [
     'lj_assert.c', 'lj_gc.c', 'lj_err.c', 'lj_char.c', 'lj_bc.c', 'lj_obj.c', 'lj_buf.c',
     'lj_str.c', 'lj_tab.c', 'lj_func.c', 'lj_udata.c', 'lj_meta.c', 'lj_debug.c',
     'lj_prng.c', 'lj_state.c', 'lj_dispatch.c', 'lj_vmevent.c', 'lj_vmmath.c',
-    'lj_strscan.c', 'lj_strfmt.c', 'lj_strfmt_num.c', 'lj_api.c', 'lj_profile.c',
+    'lj_strscan.c', 'lj_strfmt.c', 'lj_strfmt_num.c', 'lj_serialize.c',
+    'lj_api.c', 'lj_profile.c',
     'lj_lex.c', 'lj_parse.c', 'lj_bcread.c', 'lj_bcwrite.c', 'lj_load.c',
     'lj_ir.c', 'lj_opt_mem.c', 'lj_opt_fold.c', 'lj_opt_narrow.c',
     'lj_opt_dce.c', 'lj_opt_loop.c', 'lj_opt_split.c', 'lj_opt_sink.c',
