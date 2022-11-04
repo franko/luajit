@@ -10,12 +10,14 @@ subdir('host')
 
 ljlib_sources = [
     'lib_base.c', 'lib_math.c', 'lib_bit.c', 'lib_string.c', 'lib_table.c',
-    'lib_io.c', 'lib_os.c', 'lib_package.c', 'lib_debug.c', 'lib_jit.c', 'lib_ffi.c']
+    'lib_io.c', 'lib_os.c', 'lib_package.c', 'lib_debug.c', 'lib_jit.c', 'lib_ffi.c',
+    'lib_buffer.c']
 ljcore_sources = [
     'lj_assert.c', 'lj_gc.c', 'lj_err.c', 'lj_char.c', 'lj_bc.c', 'lj_obj.c', 'lj_buf.c',
     'lj_str.c', 'lj_tab.c', 'lj_func.c', 'lj_udata.c', 'lj_meta.c', 'lj_debug.c',
     'lj_prng.c', 'lj_state.c', 'lj_dispatch.c', 'lj_vmevent.c', 'lj_vmmath.c',
-    'lj_strscan.c', 'lj_strfmt.c', 'lj_strfmt_num.c', 'lj_api.c', 'lj_profile.c',
+    'lj_strscan.c', 'lj_strfmt.c', 'lj_strfmt_num.c', 'lj_serialize.c',
+    'lj_api.c', 'lj_profile.c',
     'lj_lex.c', 'lj_parse.c', 'lj_bcread.c', 'lj_bcwrite.c', 'lj_load.c',
     'lj_ir.c', 'lj_opt_mem.c', 'lj_opt_fold.c', 'lj_opt_narrow.c',
     'lj_opt_dce.c', 'lj_opt_loop.c', 'lj_opt_split.c', 'lj_opt_sink.c',
@@ -44,7 +46,15 @@ lj_defines = [
 ]
 
 if host_machine.system() == 'darwin'
-    lj_defines += '-mmacosx-version-min=10.11'
+    lj_defines += '-DLUAJIT_UNWIND_EXTERNAL'
+    lj_defines += '-mmacosx-version-min=' + get_option('macos_target')
+elif host_machine.system() != 'windows'
+    if 'NO_UNWIND' not in dasm_args
+        test_unwind = run_command('test-unwind.sh', ' '.join(cc.cmd_array()), check : false)
+        if test_unwind.stdout().strip() == 'E'
+            lj_defines += '-DLUAJIT_UNWIND_EXTERNAL'
+        endif
+    endif
 endif
 
 if get_option('portable')
@@ -76,7 +86,6 @@ elif host_machine.system() == 'darwin'
     )
     lj_libname = 'luajit'
     lj_libprefix = 'lib'
-    lj_linkargs += ['-pagezero_size', '10000', '-image_base', '100000000']
 else
     ljcore_sources += custom_target('lj_vm.s',
         input : [],
