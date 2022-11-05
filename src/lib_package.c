@@ -85,7 +85,11 @@ static void setprogdir(lua_State *L)
   if (len >= 0) {
     buf[len] = '\0';
   } else {
-    exceed_buffer_size = (errno == ENAMETOOLONG);
+    /* We should use errno and see if it is ENAMETOOLONG to know if the
+    ** error was a filename too long for the buffer. Since this code is
+    ** not implemented by LuaJIT's author we prefer to avoid adding an
+    ** include to errno.h and we omit checking. */
+    exceed_buffer_size = 1;
   }
 #elif __APPLE__
   /* use realpath to resolve a symlink if the process was launched from one.
