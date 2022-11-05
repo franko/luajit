@@ -71,23 +71,51 @@ static const char *ll_bcsym(void *lib, const char *sym)
 
 static void setprogdir(lua_State *L)
 {
-  char buff[256];
-  size_t nsize = sizeof(buff);
-  ssize_t n = readlink("/proc/self/exe", buff, nsize);
-  if (n >= nsize) {
+#define PROGDIR_BUF_SIZE 256
+  char buf[PROGDIR_BUF_SIZE];
+  int exceed_buffer_size = 0;
+#if _WIN32
+  int len = GetModuleFileName(NULL, buf, PROGDIR_BUF_SIZE);
+  exceed_buffer_size = (len >= PROGDIR_BUF_SIZE);
+  buf[len] = '\0';
+#elif __linux__
+  char path[256];
+  sprintf(path, "/proc/%d/exe", getpid());
+  int len = readlink(path, buf, PROGDIR_BUF_SIZE);
+  if (len >= 0) {
+    buf[len] = '\0';
+  } else {
+    exceed_buffer_size = (errno == ENAMETOOLONG);
+  }
+#elif __APPLE__
+  /* use realpath to resolve a symlink if the process was launched from one.
+  ** This happens when Homebrew installs a cack and creates a symlink in
+  ** /usr/loca/bin for launching the executable from the command line. */
+  unsigned size = PROGDIR_BUF_SIZE;
+  char exepath[PROGDIR_BUF_SIZE];
+  int ret = _NSGetExecutablePath(exepath, &size);
+  if (ret == 0) {
+    realpath(exepath, buf);
+  } else {
+    exceed_buffer_size = (size > PROGDIR_BUF_SIZE);
+  }
+#else
+  strcpy(buf, "./lite");
+#endif
+  if (exceed_buffer_size) {
     luaL_error(L, "unable to get binary filename / name too long");
     return;
   }
-  buff[n] = '\0';
   char *lb;
-  if (n == 0 || n == nsize || (lb = strrchr(buff, '/')) == NULL) {
+  if ((lb = strrchr(buf, '/')) == NULL) {
     luaL_error(L, "unable to get binary filename");
   } else {
     *lb = '\0';
-    luaL_gsub(L, lua_tostring(L, -1), LUA_EXECDIR, buff);
+    luaL_gsub(L, lua_tostring(L, -1), LUA_EXECDIR, buf);
     lua_remove(L, -2);  /* remove original string */
   }
 }
+#undef PROGDIR_BUF_SIZE
 #endif
 
 #elif LJ_TARGET_WINDOWS
