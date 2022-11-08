@@ -74,11 +74,7 @@ static void setprogdir(lua_State *L)
 #define PROGDIR_BUF_SIZE 256
   char buf[PROGDIR_BUF_SIZE];
   int exceed_buffer_size = 0;
-#if _WIN32
-  int len = GetModuleFileName(NULL, buf, PROGDIR_BUF_SIZE);
-  exceed_buffer_size = (len >= PROGDIR_BUF_SIZE);
-  buf[len] = '\0';
-#elif __linux__
+#if __linux__
   char path[256];
   sprintf(path, "/proc/%d/exe", getpid());
   int len = readlink(path, buf, PROGDIR_BUF_SIZE);
