@@ -23,15 +23,15 @@
 ** portable option is enabled.
 */
 #if defined(_WIN32)
-#define LUA_LDIR	"!\\lua\\"
-#define LUA_CDIR	"!\\"
+#define LUA_LDIR	"!\\..\\share\\lua\\"
+#define LUA_CDIR	"!\\..\\lib\\"
 #define LUA_PATH_DEFAULT \
   ".\\?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?\\init.lua;"
 #define LUA_CPATH_DEFAULT \
   ".\\?.dll;" LUA_CDIR"?.dll;" LUA_CDIR"loadall.dll"
 #else
-#define LUA_LDIR    "!/lua/"
-#define LUA_CDIR    "!/"
+#define LUA_LDIR    "!/../share/lua/"
+#define LUA_CDIR    "!/../lib/"
 #define LUA_PATH_DEFAULT \
   "./?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?/init.lua;"
 #define LUA_CPATH_DEFAULT \
