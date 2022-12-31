@@ -1,7 +1,7 @@
 lj_arch_test_source = files('lj_arch_test.c')
 
 if get_option('portable')
-    jitlib_install_dir = get_option('prefix') / 'share' / 'lua' / 'jit'
+    jitlib_install_dir = get_option('prefix') / 'share' / 'lua' / '5.1' / 'jit'
 else
     jitlib_install_dir = 'share' / ( 'luajit-' + meson.project_version() ) / 'jit'
 endif
