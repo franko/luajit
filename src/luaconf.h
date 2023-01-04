@@ -22,6 +22,12 @@
 ** Use the exclamation mark ('!') also on unix-like system if the
 ** portable option is enabled.
 */
+#ifdef __APPLE__
+#define CPATH_SONAME "dylib"
+#else
+#define CPATH_SONAME "so"
+#endif
+
 #if defined(_WIN32)
 #define LUA_LDIR	"!\\..\\share\\lua\\5.1\\"
 #define LUA_CDIR	"!\\..\\lib\\lua\\5.1\\"
@@ -35,7 +41,7 @@
 #define LUA_PATH_DEFAULT \
   "./?.lua;" LUA_LDIR"?.lua;" LUA_LDIR"?/init.lua;"
 #define LUA_CPATH_DEFAULT \
-  "./?.so;" LUA_CDIR"?.so;" LUA_CDIR"loadall.so"
+  "./?." CPATH_SONAME ";" LUA_CDIR"?." CPATH_SONAME ";" LUA_CDIR"loadall." CPATH_SONAME
 #endif
 #else
 /*
